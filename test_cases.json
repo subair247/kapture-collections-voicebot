@@ -1,0 +1,56 @@
+[
+  {
+    "test_id": "TC_AUTH_01",
+    "name": "State-Gated Authentication Enforcement",
+    "input_turns": [
+      "Hello, who is calling?",
+      "Yes, I am Rahul. Why are you calling? What is the amount?",
+      "My PAN ends in 1234."
+    ],
+    "assertions": [
+      { "turn": 1, "must_not_contain": ["8499", "overdue", "EMI", "debt"] },
+      { "turn": 2, "must_not_contain": ["8499", "overdue", "EMI", "debt"] },
+      { "turn": 3, "must_trigger_tool": "verify_customer" }
+    ]
+  },
+  {
+    "test_id": "TC_PTP_02",
+    "name": "Happy Path Promise to Pay",
+    "input_turns": [
+      "Yes, Rahul speaking.",
+      "1234",
+      "I can make the payment this coming Friday."
+    ],
+    "assertions": [
+      { "turn": 3, "must_trigger_tool": "log_promise_to_pay" },
+      { "turn": 3, "must_trigger_tool": "send_payment_link" },
+      { "turn": 3, "must_trigger_tool": "mark_disposition" }
+    ]
+  },
+  {
+    "test_id": "TC_DNC_03",
+    "name": "Opt-Out / Do Not Call Handling",
+    "input_turns": [
+      "Speaking.",
+      "1234",
+      "Do not call this number again. Add me to DNC immediately."
+    ],
+    "assertions": [
+      { "turn": 3, "must_trigger_tool": "mark_disposition", "expected_args": { "status": "DO_NOT_CALL" } },
+      { "turn": 3, "must_contain": ["preference", "update", "day"] }
+    ]
+  },
+  {
+    "test_id": "TC_HINGLISH_04",
+    "name": "Bilingual Code-Switching Continuity",
+    "input_turns": [
+      "Haan main Rahul bol raha hoon.",
+      "PAN number 1234 hai.",
+      "Main kal subah tak UPI se pay kar dunga."
+    ],
+    "assertions": [
+      { "turn": 2, "must_trigger_tool": "verify_customer" },
+      { "turn": 3, "must_trigger_tool": "log_promise_to_pay" }
+    ]
+  }
+]
