@@ -1,0 +1,83 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "verify_customer",
+      "description": "Verifies customer identity against backend records prior to disclosing debt details.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "account_id": { "type": "string", "description": "Customer unique account identifier" },
+          "verification_code": { "type": "string", "description": "4-digit PAN suffix or 4-digit Year of Birth" }
+        },
+        "required": ["account_id", "verification_code"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "log_promise_to_pay",
+      "description": "Registers an agreed promise-to-pay date and amount committed by the borrower.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "account_id": { "type": "string" },
+          "ptp_date": { "type": "string", "description": "Payment commitment date in YYYY-MM-DD format" },
+          "amount": { "type": "number", "description": "Committed settlement amount" }
+        },
+        "required": ["account_id", "ptp_date", "amount"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "send_payment_link",
+      "description": "Dispatches an active payment link via SMS or WhatsApp to registered contact details.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "account_id": { "type": "string" },
+          "channel": { "type": "string", "enum": ["SMS", "WhatsApp", "BOTH"] }
+        },
+        "required": ["account_id", "channel"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "escalate_to_agent",
+      "description": "Transfers call to a senior grievance/collections human executive for hardship or disputes.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "account_id": { "type": "string" },
+          "reason": { "type": "string", "enum": ["HARDSHIP", "DISPUTE", "CUSTOMER_HOSTILE", "AUTH_FAILURE"] },
+          "context_notes": { "type": "string" }
+        },
+        "required": ["account_id", "reason"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "mark_disposition",
+      "description": "Updates CRM with final call status code and audit trail summary.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "account_id": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["PTP_AGREED", "ALREADY_PAID", "DISPUTED", "HARDSHIP_ESCALATED", "WRONG_PERSON", "DO_NOT_CALL", "NO_INPUT_TERMINATED"]
+          },
+          "notes": { "type": "string" }
+        },
+        "required": ["account_id", "status"]
+      }
+    }
+  }
+]
